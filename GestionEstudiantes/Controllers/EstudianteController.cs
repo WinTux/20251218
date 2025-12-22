@@ -70,5 +70,15 @@ namespace GestionEstudiantes.Controllers
             repo.Guardar();
             return NoContent();
         }
+        [HttpDelete("{id}")]
+        public ActionResult DeleteEstudiante(int id)
+        {
+            var estudianteModelFromRepo = repo.GetEstudianteById(id);
+            if (estudianteModelFromRepo == null)
+                return NotFound();
+            repo.DeleteEstudianteById(estudianteModelFromRepo);
+            repo.Guardar();
+            return NoContent();
+        }
     }
 }

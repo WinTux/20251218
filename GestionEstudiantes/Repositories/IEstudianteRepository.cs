@@ -8,6 +8,7 @@ namespace GestionEstudiantes.Repositories
         Estudiante GetEstudianteById(int id);
         bool AddEstudiante(Estudiante estudiante);
         void UpdateEstudiante(Estudiante estudiante);
+        void DeleteEstudianteById(Estudiante estudiante);
         bool Guardar();
     }
 }

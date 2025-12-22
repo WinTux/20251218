@@ -18,6 +18,13 @@ namespace GestionEstudiantes.Repositories
             return true;
         }
 
+        public void DeleteEstudianteById(Estudiante estudiante)
+        {
+            if(estudiante == null)
+                throw new ArgumentNullException(nameof(estudiante));
+            context.Estudiantes.Remove(estudiante);
+        }
+
         public IEnumerable<Estudiante> GetAllEstudiantes()
         {
             IEnumerable<Estudiante> estudiantes = context.Estudiantes.ToList();
