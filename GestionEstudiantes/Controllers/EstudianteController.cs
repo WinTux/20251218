@@ -3,6 +3,7 @@ using GestionEstudiantes.DTO;
 using GestionEstudiantes.Models;
 using GestionEstudiantes.Repositories;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionEstudiantes.Controllers
@@ -48,6 +49,23 @@ namespace GestionEstudiantes.Controllers
             if (estudianteModelFromRepo == null)
                 return NotFound();
             mapper.Map(estudianteUpdateDTO, estudianteModelFromRepo);
+            repo.UpdateEstudiante(estudianteModelFromRepo);
+            repo.Guardar();
+            return NoContent();
+        }
+        [HttpPatch("{id}")]
+        public ActionResult PartialEstudianteUpdate(int id, JsonPatchDocument<EstudianteUpdateDTO> patchDoc)
+        {
+            var estudianteModelFromRepo = repo.GetEstudianteById(id);
+            if (estudianteModelFromRepo == null)
+                return NotFound();
+            var estudianteToPatch = mapper.Map<EstudianteUpdateDTO>(estudianteModelFromRepo);
+            patchDoc.ApplyTo(estudianteToPatch, ModelState);
+            if (!TryValidateModel(estudianteToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+            mapper.Map(estudianteToPatch, estudianteModelFromRepo);
             repo.UpdateEstudiante(estudianteModelFromRepo);
             repo.Guardar();
             return NoContent();

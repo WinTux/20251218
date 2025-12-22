@@ -1,6 +1,7 @@
 using GestionEstudiantes.Repositories;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
+using Newtonsoft.Json.Serialization;
 
 namespace GestionEstudiantes
 {
@@ -13,7 +14,9 @@ namespace GestionEstudiantes
             // Add services to the container.
             builder.Services.AddDbContext<InstitutoDbContext>(op => op.UseSqlServer(builder.Configuration.GetConnectionString("una_canexion")));
             builder.Services.AddAuthorization();
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddNewtonsoftJson(s => 
+                s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddScoped<IEstudianteRepository, ImplEstudianteRepository>();
 

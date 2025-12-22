@@ -9,7 +9,8 @@ namespace GestionEstudiantes.DTO_perfiles
         {
             CreateMap<Estudiante, EstudianteReadDTO>();// ---> De Estudiante a EstudianteReadDTO
             CreateMap<EstudianteCreateDTO, Estudiante>();// ---> De EstudianteCreateDTO a Estudiante
-            CreateMap<EstudianteUpdateDTO, Estudiante>(); 
+            CreateMap<EstudianteUpdateDTO, Estudiante>();
+            CreateMap<Estudiante,EstudianteUpdateDTO>();
         }
     }
 }
