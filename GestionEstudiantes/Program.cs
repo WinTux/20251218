@@ -1,4 +1,6 @@
 using GestionEstudiantes.Repositories;
+using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 namespace GestionEstudiantes
 {
@@ -9,8 +11,10 @@ namespace GestionEstudiantes
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddDbContext<InstitutoDbContext>(op => op.UseSqlServer(builder.Configuration.GetConnectionString("una_canexion")));
             builder.Services.AddAuthorization();
             builder.Services.AddControllers();
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddScoped<IEstudianteRepository, ImplEstudianteRepository>();
 
             var app = builder.Build();

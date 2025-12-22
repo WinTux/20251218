@@ -1,4 +1,6 @@
-﻿using GestionEstudiantes.Models;
+﻿using AutoMapper;
+using GestionEstudiantes.DTO;
+using GestionEstudiantes.Models;
 using GestionEstudiantes.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,23 +12,45 @@ namespace GestionEstudiantes.Controllers
     public class EstudianteController : ControllerBase
     {
         private readonly IEstudianteRepository repo;
-        public EstudianteController(IEstudianteRepository repo)
+        private readonly IMapper mapper;
+        public EstudianteController(IEstudianteRepository repo, IMapper mapper)
         {
             this.repo = repo;
+            this.mapper = mapper;
         }
         [HttpGet]
-        public ActionResult<IEnumerable<Estudiante>> GetEstudiantes()
+        public ActionResult<IEnumerable<EstudianteReadDTO>> GetEstudiantes()
         {
             var estudiantes = repo.GetAllEstudiantes();
-            return Ok(estudiantes);
+            return Ok(mapper.Map<IEnumerable<EstudianteReadDTO>>(estudiantes));
         }
-        [HttpGet("{id}")]
-        public ActionResult<Estudiante> GetEstudianteById(int id)
+        [HttpGet("{id}", Name = "GetEstudianteById")]
+        public ActionResult<EstudianteReadDTO> GetEstudianteById(int id)
         {
             var estudiante = repo.GetEstudianteById(id);
             if (estudiante == null)
                 return NotFound();
-            return Ok(estudiante);
+            return Ok(mapper.Map<EstudianteReadDTO>(estudiante));
+        }
+        [HttpPost]
+        public ActionResult<EstudianteReadDTO> CreateEstudiante(EstudianteCreateDTO estudianteCreateDTO)
+        {
+            var estudianteModel = mapper.Map<Estudiante>(estudianteCreateDTO);
+            repo.AddEstudiante(estudianteModel);
+            repo.Guardar();
+            var estudianteReadDTO = mapper.Map<EstudianteReadDTO>(estudianteModel);
+            return CreatedAtRoute(nameof(GetEstudianteById), new { id = estudianteModel.Id }, estudianteReadDTO);
+        }
+        [HttpPut("{id}")]
+        public ActionResult UpdateEstudiante(int id, EstudianteUpdateDTO estudianteUpdateDTO)
+        {
+            var estudianteModelFromRepo = repo.GetEstudianteById(id);
+            if (estudianteModelFromRepo == null)
+                return NotFound();
+            mapper.Map(estudianteUpdateDTO, estudianteModelFromRepo);
+            repo.UpdateEstudiante(estudianteModelFromRepo);
+            repo.Guardar();
+            return NoContent();
         }
     }
 }

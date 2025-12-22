@@ -4,19 +4,40 @@ namespace GestionEstudiantes.Repositories
 {
     public class ImplEstudianteRepository : IEstudianteRepository
     {
+        private readonly InstitutoDbContext context;
+        public ImplEstudianteRepository(InstitutoDbContext context)
+        {
+            this.context = context;
+        }
+
+        public bool AddEstudiante(Estudiante estudiante)
+        {
+            if(estudiante == null)
+                throw new ArgumentNullException(nameof(estudiante));
+            context.Estudiantes.Add(estudiante);
+            return true;
+        }
+
         public IEnumerable<Estudiante> GetAllEstudiantes()
         {
-            IEnumerable<Estudiante> estudiantes = new List<Estudiante>
-            {
-                new Estudiante { Id = 1, Nombre = "Pepe", Apellido = "Perales", FechaNacimiento = new DateTime(2000, 5, 15), Email = "pepe@gmail.com" },
-                new Estudiante { Id = 2, Nombre = "Ana", Apellido = "Sosa", FechaNacimiento = new DateTime(2000, 5, 10), Email = "ana@gmail.com" }
-            }; 
+            IEnumerable<Estudiante> estudiantes = context.Estudiantes.ToList();
             return estudiantes;
         }
 
         public Estudiante GetEstudianteById(int id)
         {
-            return new Estudiante { Id = 1, Nombre = "Pepe", Apellido = "Perales", FechaNacimiento = new DateTime(2000, 5, 15), Email = "pepe@gmail.com" };
+            return context.Estudiantes.FirstOrDefault(e => e.Id == id);
+        }
+
+        public bool Guardar()
+        {
+            context.SaveChanges();
+            return true;
+        }
+
+        public void UpdateEstudiante(Estudiante estudiante)
+        {
+            // No implementation needed for EF Core as it tracks changes automatically
         }
     }
 }
