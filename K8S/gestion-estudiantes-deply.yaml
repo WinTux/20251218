@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gestion-estudiantes-deploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gestionestudiantesservice
+  template:
+    metadata:
+      labels:
+        app: gestionestudiantesservice
+    spec:
+      containers:
+        - name: gestionestudiantesservice
+          image: pepe/miimagensuprema:1.1
+          imagePullPolicy: IfNotPresent
