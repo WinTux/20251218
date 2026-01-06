@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using GestionEstudiantes.ComunicacionSync.http;
 using GestionEstudiantes.DTO;
 using GestionEstudiantes.Models;
 using GestionEstudiantes.Repositories;
@@ -14,10 +15,13 @@ namespace GestionEstudiantes.Controllers
     {
         private readonly IEstudianteRepository repo;
         private readonly IMapper mapper;
-        public EstudianteController(IEstudianteRepository repo, IMapper mapper)
+        private readonly ICampusHistorialEstudiante campusHistorialEstudiante;
+
+        public EstudianteController(IEstudianteRepository repo, IMapper mapper, ICampusHistorialEstudiante campusHistorialEstudiante)
         {
             this.repo = repo;
             this.mapper = mapper;
+            this.campusHistorialEstudiante = campusHistorialEstudiante;
         }
         [HttpGet]
         public ActionResult<IEnumerable<EstudianteReadDTO>> GetEstudiantes()
@@ -34,12 +38,20 @@ namespace GestionEstudiantes.Controllers
             return Ok(mapper.Map<EstudianteReadDTO>(estudiante));
         }
         [HttpPost]
-        public ActionResult<EstudianteReadDTO> CreateEstudiante(EstudianteCreateDTO estudianteCreateDTO)
+        public async Task<ActionResult<EstudianteReadDTO>> CreateEstudiante(EstudianteCreateDTO estudianteCreateDTO)
         {
             var estudianteModel = mapper.Map<Estudiante>(estudianteCreateDTO);
             repo.AddEstudiante(estudianteModel);
             repo.Guardar();
             var estudianteReadDTO = mapper.Map<EstudianteReadDTO>(estudianteModel);
+            try
+            {
+                await campusHistorialEstudiante.ComunicarseConCampus(estudianteReadDTO);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"No se pudo comunicar con el servicio externo Campus: {ex.Message}");
+            }
             return CreatedAtRoute(nameof(GetEstudianteById), new { id = estudianteModel.Id }, estudianteReadDTO);
         }
         [HttpPut("{id}")]

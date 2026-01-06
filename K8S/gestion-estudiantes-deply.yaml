@@ -16,3 +16,17 @@ spec:
         - name: gestionestudiantesservice
           image: pepe/miimagensuprema:1.1
           imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gestion-estudiantes-clusterip-service
+spec:
+  type: ClusterIP
+  selector:
+    app: gestionestudiantesservice
+  ports:
+    - name: gestionestudiantesservice
+      protocol: TCP
+      port: 8080
+      targetPort: 8080

@@ -6,9 +6,11 @@ namespace Campus.Controllers
     [Route("api/[controller]")]
     public class HistorialController : ControllerBase
     {
-        public IActionResult Index()
+        [HttpPost]
+        public IActionResult Post()
         {
-            return "";
+            Console.WriteLine("Llegó una petición al servicio Campus - HistorialController");
+            return Ok("Llegó una petición al servicio Campus - HistorialController");
         }
     }
 }
