@@ -17,7 +17,7 @@ spec:
                 name: gestion-estudiantes-clusterip-service
                 port:
                   number: 8080
-          - path: /api/campus/estudiante
+          - path: /api/campus
             pathType: Prefix
             backend:
               service:
