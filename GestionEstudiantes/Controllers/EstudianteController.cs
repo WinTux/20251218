@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using GestionEstudiantes.ComunicacionAsync;
 using GestionEstudiantes.ComunicacionSync.http;
 using GestionEstudiantes.DTO;
 using GestionEstudiantes.Models;
@@ -16,12 +17,14 @@ namespace GestionEstudiantes.Controllers
         private readonly IEstudianteRepository repo;
         private readonly IMapper mapper;
         private readonly ICampusHistorialEstudiante campusHistorialEstudiante;
+        private readonly IBusDeMensajesCliente busDeMensajesCliente;
 
-        public EstudianteController(IEstudianteRepository repo, IMapper mapper, ICampusHistorialEstudiante campusHistorialEstudiante)
+        public EstudianteController(IEstudianteRepository repo, IMapper mapper, ICampusHistorialEstudiante campusHistorialEstudiante, IBusDeMensajesCliente busDeMensajesCliente)
         {
             this.repo = repo;
             this.mapper = mapper;
             this.campusHistorialEstudiante = campusHistorialEstudiante;
+            this.busDeMensajesCliente = busDeMensajesCliente;
         }
         [HttpGet]
         public ActionResult<IEnumerable<EstudianteReadDTO>> GetEstudiantes()
@@ -52,6 +55,12 @@ namespace GestionEstudiantes.Controllers
             {
                 Console.WriteLine($"No se pudo comunicar con el servicio externo Campus: {ex.Message}");
             }
+            try
+            {
+                var estudianteProducerDTO = mapper.Map<EstudianteProducerDTO>(estudianteReadDTO);
+                estudianteProducerDTO.tipoEvento = "estudiante_publicado";
+                busDeMensajesCliente.PublicarNuevoEstudiante(estudianteProducerDTO);
+            }catch(Exception ex) { Console.WriteLine("Ocurrió un error al tratar de publicar: "+ex.ToString()); }
             return CreatedAtRoute(nameof(GetEstudianteById), new { id = estudianteModel.Id }, estudianteReadDTO);
         }
         [HttpPut("{id}")]

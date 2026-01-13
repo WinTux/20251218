@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Newtonsoft.Json.Serialization;
 using GestionEstudiantes.ComunicacionSync.http;
+using GestionEstudiantes.ComunicacionAsync;
 
 namespace GestionEstudiantes
 {
@@ -21,6 +22,7 @@ namespace GestionEstudiantes
                 s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddScoped<IEstudianteRepository, ImplEstudianteRepository>();
+            builder.Services.AddSingleton<IBusDeMensajesCliente,ImplBusDeMensajesCliente>();
 
             var app = builder.Build();
 

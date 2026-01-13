@@ -1,3 +1,6 @@
+using Campus.Conexion;
+using Microsoft.EntityFrameworkCore;
+
 namespace Campus
 {
     public class Program
@@ -9,6 +12,9 @@ namespace Campus
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            builder.Services.AddDbContext<CampusDbContext>(op => op.UseInMemoryDatabase("miDb"));
+            builder.Services.AddScoped<IPerfilRepository, ImplPerfilRepository>();
 
             var app = builder.Build();
 
